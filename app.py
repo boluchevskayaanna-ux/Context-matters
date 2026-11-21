@@ -67,12 +67,12 @@ if page == 'Home':
     </div>
     """, unsafe_allow_html=True)
     st.write('Explore how advice about work, money and education changes depending on where you live and your circumstances.')
-    st.button('Explore advice -', on_click=explore, type='primary')
+    st.button('Explore advice', on_click=explore, type='primary')
     st.markdown('<div class="kicker">01 / THE CONTEXT SWITCH</div><div class="feature">WHAT IF YOU LIVED ELSEWHERE?<strong>Just get a job.</strong><p>Sounds simple, right? Compare three different realities.</p></div>', unsafe_allow_html=True)
-    st.button('Compare contexts -', on_click=explore, args=('Career & Work',))
+    st.button('Compare contexts', on_click=explore, args=('Career & Work',))
     st.markdown('<div class="kicker">02 / FIND YOUR TOPIC</div>', unsafe_allow_html=True)
     for category in sorted(advice['category'].unique().tolist()):
-        st.button(category + ' -', key='home_' + category, on_click=explore, args=(category,), use_container_width=True)
+        st.button(category, key='home_' + category, on_click=explore, args=(category,), use_container_width=True)
     st.markdown('<div class="kicker">03 / THE RESEARCH</div>', unsafe_allow_html=True)
     a, b, c = st.columns(3)
     a.metric('Advice cases', len(advice))
