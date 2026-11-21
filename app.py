@@ -48,7 +48,7 @@ def show_sources(ids):
     for source_id in ids.split(';'):
         matches = sources[sources['source_id'] == source_id.strip()]
         for _, source in matches.iterrows():
-            st.write(source['source_id'], 'â', source['institution'], 'â', source['title'])
+            st.write(source['source_id'], '-', source['institution'], '-', source['title'])
             st.caption(source.get('verification_status', 'Verification pending'))
             if source['url'].startswith(('https://', 'http://')):
                 st.link_button('Open source', source['url'])
@@ -67,12 +67,12 @@ if page == 'Home':
     </div>
     """, unsafe_allow_html=True)
     st.write('Explore how advice about work, money and education changes depending on where you live and your circumstances.')
-    st.button('Explore advice â', on_click=explore, type='primary')
+    st.button('Explore advice -', on_click=explore, type='primary')
     st.markdown('<div class="kicker">01 / THE CONTEXT SWITCH</div><div class="feature">WHAT IF YOU LIVED ELSEWHERE?<strong>Just get a job.</strong><p>Sounds simple, right? Compare three different realities.</p></div>', unsafe_allow_html=True)
-    st.button('Compare contexts â', on_click=explore, args=('Career & Work',))
+    st.button('Compare contexts -', on_click=explore, args=('Career & Work',))
     st.markdown('<div class="kicker">02 / FIND YOUR TOPIC</div>', unsafe_allow_html=True)
     for category in sorted(advice['category'].unique().tolist()):
-        st.button(category + ' â', key='home_' + category, on_click=explore, args=(category,), use_container_width=True)
+        st.button(category + ' -', key='home_' + category, on_click=explore, args=(category,), use_container_width=True)
     st.markdown('<div class="kicker">03 / THE RESEARCH</div>', unsafe_allow_html=True)
     a, b, c = st.columns(3)
     a.metric('Advice cases', len(advice))
@@ -108,7 +108,7 @@ elif page == 'Context Switch':
     st.caption('The profiles below are predefined research cases, not personalized legal assessments.')
     case = contexts[contexts['advice_id'] == selected]
     selected_countries = st.multiselect('Compare countries', countries, default=countries)
-    status_icons = {'Available': 'â', 'Conditional': 'â', 'Restricted': 'Ã', 'Unknown': '?', 'N/A': 'â'}
+    status_icons = {'Available': '*', 'Conditional': '~', 'Restricted': 'X', 'Unknown': '?', 'N/A': '-'}
     if selected_countries:
         summary = []
         for title, status, description in dimensions:
@@ -141,6 +141,13 @@ elif page == 'Context Switch':
                     st.write(row.get(description, '') or 'Insufficient information.')
             st.markdown('**Alternative or next step**')
             st.write(row['alternative'])
+            st.markdown('**Your next steps**')
+            st.write('1. Read the legal and administrative conditions above. If they are Unknown, verify them before making a decision.')
+            st.write('2. List what you already have: time, skills, equipment, documents and a realistic budget.')
+            st.write('3. Choose one small, safe step toward the goal, such as learning a skill, preparing an application or contacting an official adviser.')
+            if row['alternative']:
+                st.write('4. An alternative to explore: ' + row['alternative'])
+            st.caption('These are general planning prompts, not a guarantee of eligibility or success.')
             with st.expander('Evidence and verification'):
                 show_sources(row['source_ids'])
                 st.caption('Record date: ' + row['checked_date'])
@@ -165,7 +172,7 @@ elif page == 'Interactive Scenarios':
     scenario_labels = []
     scenario_ids = {}
     for _, scenario in scenarios.iterrows():
-        label = scenario['scenario_id'] + ' â ' + scenario['situation']
+        label = scenario['scenario_id'] + ' - ' + scenario['situation']
         scenario_labels.append(label)
         scenario_ids[label] = scenario['scenario_id']
     if scenario_labels:
