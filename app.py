@@ -3,16 +3,23 @@ import pandas as pd
 import streamlit as st
 
 st.set_page_config(page_title='Context Matters', layout='wide')
-st.title('Context Matters')
-st.caption('The internet is global. Opportunities are not.')
-st.sidebar.header('Explore')
-page = st.sidebar.radio('Section', ['Context Switch', 'Advice Explorer', 'Interactive Scenarios', 'Affordability Calculator', 'Research & Evidence'])
+# Keep the visual design in a separate CSS file.
+with open('style.css', encoding='utf-8') as file:
+    st.markdown('<style>' + file.read() + '</style>', unsafe_allow_html=True)
+
+st.markdown('<div class="brand">context/matters</div>', unsafe_allow_html=True)
+pages = ['Home', 'Context Switch', 'Advice Explorer', 'Interactive Scenarios', 'Affordability Calculator', 'Research & Evidence']
+if 'page' not in st.session_state:
+    st.session_state.page = 'Home'
+if 'category_choice' not in st.session_state:
+    st.session_state.category_choice = 'All'
+page = st.radio('Navigation', pages, horizontal=True, key='page', label_visibility='collapsed')
 
 # Keep the Excel export beside app.py, or upload it here for local testing.
 if os.path.exists('database.xlsx'):
     database = 'database.xlsx'
 else:
-    database = st.sidebar.file_uploader('Upload the database (.xlsx)', type=['xlsx'])
+    database = st.file_uploader('Upload the database (.xlsx)', type=['xlsx'])
 if database is None:
     st.info('Export Context Matters Database from Google Sheets as an Excel workbook and upload it here, or save it as database.xlsx beside app.py.')
     st.stop()
@@ -41,15 +48,50 @@ def show_sources(ids):
     for source_id in ids.split(';'):
         matches = sources[sources['source_id'] == source_id.strip()]
         for _, source in matches.iterrows():
-            st.write(source['source_id'], '—', source['institution'], '—', source['title'])
+            st.write(source['source_id'], 'â', source['institution'], 'â', source['title'])
             st.caption(source.get('verification_status', 'Verification pending'))
             if source['url'].startswith(('https://', 'http://')):
                 st.link_button('Open source', source['url'])
 
-if page == 'Context Switch':
+def explore(category='All'):
+    st.session_state.page = 'Context Switch'
+    st.session_state.category_choice = category
+
+if page == 'Home':
+    st.markdown("""
+    <div class="hero">
+      <div class="kicker">THE OTHER SIDE OF ONLINE ADVICE</div>
+      <div class="hero-title">Same advice.<br><span>Different<br>reality.</span></div>
+      <div class="hero-copy">The internet is global.<br>Opportunities are not.</div>
+      <div class="stamp">CONTEXT<br>IS KEY.</div>
+    </div>
+    """, unsafe_allow_html=True)
+    st.write('Explore how advice about work, money and education changes depending on where you live and your circumstances.')
+    st.button('Explore advice â', on_click=explore, type='primary')
+    st.markdown('<div class="kicker">01 / THE CONTEXT SWITCH</div><div class="feature">WHAT IF YOU LIVED ELSEWHERE?<strong>Just get a job.</strong><p>Sounds simple, right? Compare three different realities.</p></div>', unsafe_allow_html=True)
+    st.button('Compare contexts â', on_click=explore, args=('Career & Work',))
+    st.markdown('<div class="kicker">02 / FIND YOUR TOPIC</div>', unsafe_allow_html=True)
+    for category in sorted(advice['category'].unique().tolist()):
+        st.button(category + ' â', key='home_' + category, on_click=explore, args=(category,), use_container_width=True)
+    st.markdown('<div class="kicker">03 / THE RESEARCH</div>', unsafe_allow_html=True)
+    a, b, c = st.columns(3)
+    a.metric('Advice cases', len(advice))
+    b.metric('Countries', len(countries))
+    c.metric('Context profiles', len(contexts))
+    st.caption('Independent research prototype. Evidence checks are ongoing; this is not personalized legal or financial advice.')
+
+elif page == 'Context Switch':
     st.header('Same advice. Different context.')
-    st.info('Research prototype: context assessments are preliminary. Unknown means insufficient evidence, not inaccessible. Check current official rules before acting.')
-    category = st.selectbox('Category', ['All'] + sorted(advice['category'].unique().tolist()))
+    st.write('Explore how the same online advice changes across countries, rules and life circumstances.')
+    a, b, c = st.columns(3)
+    a.metric('Advice cases', len(advice))
+    b.metric('Countries', len(countries))
+    c.metric('Context profiles', len(contexts))
+    st.caption('Research prototype. Assessments are preliminary; Unknown means insufficient evidence. Check current official rules before acting.')
+    categories = ['All'] + sorted(advice['category'].unique().tolist())
+    if st.session_state.category_choice not in categories:
+        st.session_state.category_choice = 'All'
+    category = st.selectbox('Category', categories, key='category_choice')
     choices = advice
     if category != 'All':
         choices = advice[advice['category'] == category]
@@ -58,7 +100,7 @@ if page == 'Context Switch':
     labels = []
     advice_ids = {}
     for _, row in choices.iterrows():
-        label = row['advice_id'] + ' — ' + row['advice']
+        label = row['advice']
         labels.append(label)
         advice_ids[label] = row['advice_id']
     selected_label = st.selectbox('Choose advice', labels)
@@ -66,6 +108,22 @@ if page == 'Context Switch':
     st.caption('The profiles below are predefined research cases, not personalized legal assessments.')
     case = contexts[contexts['advice_id'] == selected]
     selected_countries = st.multiselect('Compare countries', countries, default=countries)
+    status_icons = {'Available': 'â', 'Conditional': 'â', 'Restricted': 'Ã', 'Unknown': '?', 'N/A': 'â'}
+    if selected_countries:
+        summary = []
+        for title, status, description in dimensions:
+            item = {'Dimension': title}
+            for country in selected_countries:
+                match = case[case['country'] == country]
+                value = 'Unknown'
+                if not match.empty:
+                    value = match.iloc[0].get(status, 'Unknown') or 'Unknown'
+                item[country] = status_icons.get(value, '') + ' ' + value
+            summary.append(item)
+        st.subheader('At a glance')
+        st.dataframe(pd.DataFrame(summary), hide_index=True, use_container_width=True)
+        st.caption('Each dimension is assessed separately. No overall ranking is calculated.')
+        st.subheader('Explore the differences')
     for country in selected_countries:
         match = case[case['country'] == country]
         if match.empty:
@@ -89,11 +147,13 @@ if page == 'Context Switch':
 
 elif page == 'Advice Explorer':
     st.header('Advice Explorer')
+    st.write('Explore the advice behind the research and its original context.')
     search = st.text_input('Search advice')
     filtered = advice[advice['advice'].str.contains(search, case=False, regex=False)]
+    st.caption(f'{len(filtered)} advice cases found')
     for _, row in filtered.iterrows():
         with st.expander(row['advice']):
-            st.caption(row['category'] + ' · ' + row['platform'])
+            st.caption(row['category'] + ' Â· ' + row['platform'])
             st.write(row['applicability_notes'])
             st.caption(row['verification_status'])
             if row['post_url'].startswith('https://'):
@@ -105,7 +165,7 @@ elif page == 'Interactive Scenarios':
     scenario_labels = []
     scenario_ids = {}
     for _, scenario in scenarios.iterrows():
-        label = scenario['scenario_id'] + ' — ' + scenario['situation']
+        label = scenario['scenario_id'] + ' â ' + scenario['situation']
         scenario_labels.append(label)
         scenario_ids[label] = scenario['scenario_id']
     if scenario_labels:
@@ -129,7 +189,10 @@ elif page == 'Affordability Calculator':
     rent = st.number_input('Monthly rent', min_value=0.0, value=750.0)
     expenses = st.number_input('Other essential expenses', min_value=0.0, value=450.0)
     balance = income - rent - expenses
-    st.metric('Monthly balance', f'{balance:,.2f} {currency}')
+    a, b, c = st.columns(3)
+    a.metric('Income', f'{income:,.2f} {currency}')
+    b.metric('Essential costs', f'{rent + expenses:,.2f} {currency}')
+    c.metric('Monthly balance', f'{balance:,.2f} {currency}')
     if balance < 0:
         st.warning('Expenses exceed income in this hypothetical budget.')
     else:
