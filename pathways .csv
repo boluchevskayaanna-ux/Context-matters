@@ -1,0 +1,46 @@
+goal,country,step,title,action,check,source_ids
+Find a first job,Russia,1,Check the rules,"Check the minimum age, permitted working hours and any restrictions for your situation.","Age, region and school schedule matter.",S008;S009
+Find a first job,Russia,2,Prepare a simple application,"Write a one-page CV with school projects, volunteering and skills. You do not need to invent experience.",Ask a teacher or career adviser to review it.,
+Find a first job,Russia,3,Search carefully,"Look for verified local vacancies, school or university opportunities and official career services.",Avoid offers requesting upfront payments or private documents.,
+Find a first job,Russia,4,Apply and improve,"Choose a few suitable openings, adapt your application and keep a record of responses.","If you get no replies, review the CV and try another channel.",
+Find a first job,Russia,5,Explore another route,"If paid work is not currently possible, consider supervised projects or learning a useful skill.",Unpaid work and internships may have legal conditions.,
+Find a first job,USA,1,Check the rules,"Check the minimum age, permitted working hours and any restrictions for your situation.","Age, region and school schedule matter.",S006;S007
+Find a first job,USA,2,Prepare a simple application,"Write a one-page CV with school projects, volunteering and skills. You do not need to invent experience.",Ask a teacher or career adviser to review it.,
+Find a first job,USA,3,Search carefully,"Look for verified local vacancies, school or university opportunities and official career services.",Avoid offers requesting upfront payments or private documents.,
+Find a first job,USA,4,Apply and improve,"Choose a few suitable openings, adapt your application and keep a record of responses.","If you get no replies, review the CV and try another channel.",
+Find a first job,USA,5,Explore another route,"If paid work is not currently possible, consider supervised projects or learning a useful skill.",Unpaid work and internships may have legal conditions.,
+Find a first job,France,1,Check the rules,"Check the minimum age, permitted working hours and any restrictions for your situation.","Age, region and school schedule matter.",S005
+Find a first job,France,2,Prepare a simple application,"Write a one-page CV with school projects, volunteering and skills. You do not need to invent experience.",Ask a teacher or career adviser to review it.,
+Find a first job,France,3,Search carefully,"Look for verified local vacancies, school or university opportunities and official career services.",Avoid offers requesting upfront payments or private documents.,
+Find a first job,France,4,Apply and improve,"Choose a few suitable openings, adapt your application and keep a record of responses.","If you get no replies, review the CV and try another channel.",
+Find a first job,France,5,Explore another route,"If paid work is not currently possible, consider supervised projects or learning a useful skill.",Unpaid work and internships may have legal conditions.,
+Study with a lower budget,Russia,1,Choose a realistic program,"List programs matching your interests, language level and entry qualifications.",Check the institution's official admissions page.,
+Study with a lower budget,Russia,2,Calculate the full cost,"Include tuition, fees, housing, food, transport and visa or residence expenses where relevant.",Do not treat tuition-free as cost-free.,
+Study with a lower budget,Russia,3,Look for support,"Search official university scholarships, public grants and local programs.","Check citizenship, residency, age and deadlines.",S022
+Study with a lower budget,Russia,4,Prepare documents,"Make a checklist of academic records, language evidence and required translations.",Follow the exact program requirements.,
+Study with a lower budget,Russia,5,Keep a backup option,Compare an affordable local or alternative route if your first choice is not feasible.,Funding and admission are not guaranteed.,
+Study with a lower budget,USA,1,Choose a realistic program,"List programs matching your interests, language level and entry qualifications.",Check the institution's official admissions page.,
+Study with a lower budget,USA,2,Calculate the full cost,"Include tuition, fees, housing, food, transport and visa or residence expenses where relevant.",Do not treat tuition-free as cost-free.,
+Study with a lower budget,USA,3,Look for support,"Search official university scholarships, public grants and local programs.","Check citizenship, residency, age and deadlines.",S025
+Study with a lower budget,USA,4,Prepare documents,"Make a checklist of academic records, language evidence and required translations.",Follow the exact program requirements.,
+Study with a lower budget,USA,5,Keep a backup option,Compare an affordable local or alternative route if your first choice is not feasible.,Funding and admission are not guaranteed.,
+Study with a lower budget,France,1,Choose a realistic program,"List programs matching your interests, language level and entry qualifications.",Check the institution's official admissions page.,
+Study with a lower budget,France,2,Calculate the full cost,"Include tuition, fees, housing, food, transport and visa or residence expenses where relevant.",Do not treat tuition-free as cost-free.,S029
+Study with a lower budget,France,3,Look for support,"Search official university scholarships, public grants and local programs.","Check citizenship, residency, age and deadlines.",S018
+Study with a lower budget,France,4,Prepare documents,"Make a checklist of academic records, language evidence and required translations.",Follow the exact program requirements.,
+Study with a lower budget,France,5,Keep a backup option,Compare an affordable local or alternative route if your first choice is not feasible.,Funding and admission are not guaranteed.,
+Learn a skill and build experience,Russia,1,Pick one skill,"Choose one practical skill you want to learn, such as video editing or basic programming.",Check that you have the necessary device and time.,
+Learn a skill and build experience,Russia,2,Use a free learning resource,Follow a structured introductory course and practice regularly.,Check whether the resource is accessible where you live.,S024
+Learn a skill and build experience,Russia,3,Make a small project,Create one simple example that shows what you can do.,Do not share private information in a public portfolio.,
+Learn a skill and build experience,Russia,4,Get feedback,"Ask a teacher, mentor or trusted community to review your work.",Be cautious with strangers and requests for personal details.,
+Learn a skill and build experience,Russia,5,Check earning conditions,"Before accepting paid work, check the rules for your age and activity.",Digital work can still involve legal and administrative requirements.,
+Learn a skill and build experience,USA,1,Pick one skill,"Choose one practical skill you want to learn, such as video editing or basic programming.",Check that you have the necessary device and time.,
+Learn a skill and build experience,USA,2,Use a free learning resource,Follow a structured introductory course and practice regularly.,Check whether the resource is accessible where you live.,S024
+Learn a skill and build experience,USA,3,Make a small project,Create one simple example that shows what you can do.,Do not share private information in a public portfolio.,
+Learn a skill and build experience,USA,4,Get feedback,"Ask a teacher, mentor or trusted community to review your work.",Be cautious with strangers and requests for personal details.,
+Learn a skill and build experience,USA,5,Check earning conditions,"Before accepting paid work, check the rules for your age and activity.",Digital work can still involve legal and administrative requirements.,
+Learn a skill and build experience,France,1,Pick one skill,"Choose one practical skill you want to learn, such as video editing or basic programming.",Check that you have the necessary device and time.,
+Learn a skill and build experience,France,2,Use a free learning resource,Follow a structured introductory course and practice regularly.,Check whether the resource is accessible where you live.,S024
+Learn a skill and build experience,France,3,Make a small project,Create one simple example that shows what you can do.,Do not share private information in a public portfolio.,
+Learn a skill and build experience,France,4,Get feedback,"Ask a teacher, mentor or trusted community to review your work.",Be cautious with strangers and requests for personal details.,
+Learn a skill and build experience,France,5,Check earning conditions,"Before accepting paid work, check the rules for your age and activity.",Digital work can still involve legal and administrative requirements.,
