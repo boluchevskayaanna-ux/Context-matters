@@ -4,11 +4,12 @@ import streamlit as st
 
 st.set_page_config(page_title='Context Matters', layout='wide')
 # Keep the visual design in a separate CSS file.
-with open('style.css', encoding='utf-8') as file:
-    st.markdown('<style>' + file.read() + '</style>', unsafe_allow_html=True)
+if os.path.exists('style.css'):
+    with open('style.css', encoding='utf-8') as file:
+        st.markdown('<style>' + file.read() + '</style>', unsafe_allow_html=True)
 
 st.markdown('<div class="brand">context/matters</div>', unsafe_allow_html=True)
-pages = ['Home', 'Context Switch', 'Advice Explorer', 'Interactive Scenarios', 'Affordability Calculator', 'Research & Evidence']
+pages = ['Home', 'Context Switch', 'Advice Explorer', 'Your Path', 'Interactive Scenarios', 'Affordability Calculator', 'Research & Evidence']
 if 'page' not in st.session_state:
     st.session_state.page = 'Home'
 if 'category_choice' not in st.session_state:
@@ -70,6 +71,9 @@ if page == 'Home':
     st.button('Explore advice', on_click=explore, type='primary')
     st.markdown('<div class="kicker">01 / THE CONTEXT SWITCH</div><div class="feature">WHAT IF YOU LIVED ELSEWHERE?<strong>Just get a job.</strong><p>Sounds simple, right? Compare three different realities.</p></div>', unsafe_allow_html=True)
     st.button('Compare contexts', on_click=explore, args=('Career & Work',))
+    if st.button('Build your path'):
+        st.session_state.page = 'Your Path'
+        st.rerun()
     st.markdown('<div class="kicker">02 / FIND YOUR TOPIC</div>', unsafe_allow_html=True)
     for category in sorted(advice['category'].unique().tolist()):
         st.button(category, key='home_' + category, on_click=explore, args=(category,), use_container_width=True)
@@ -165,6 +169,33 @@ elif page == 'Advice Explorer':
             st.caption(row['verification_status'])
             if row['post_url'].startswith('https://'):
                 st.link_button('Original publication', row['post_url'])
+
+elif page == 'Your Path':
+    st.header('Your goal. Your next steps.')
+    st.write('Choose a goal and a country to see a practical starting route.')
+    st.caption('These routes are research-based planning guides, not a personalized legal assessment.')
+    if not os.path.exists('pathways.csv'):
+        st.warning('Add pathways.csv next to app.py to enable this section.')
+    else:
+        paths = pd.read_csv('pathways.csv', dtype=str, keep_default_na=False)
+        goal = st.selectbox('What do you want to do?', sorted(paths['goal'].unique()))
+        country = st.selectbox('Where do you live?', countries)
+        path = paths[(paths['goal'] == goal) & (paths['country'] == country)]
+        if path.empty:
+            st.info('This route is not yet researched.')
+        else:
+            st.markdown('<div class="kicker">YOUR STARTING ROUTE</div>', unsafe_allow_html=True)
+            for _, step in path.sort_values('step').iterrows():
+                st.subheader(step['step'] + ' / ' + step['title'])
+                st.write(step['action'])
+                if step['check']:
+                    st.caption('Check: ' + step['check'])
+                if step['source_ids']:
+                    with st.expander('Sources for this step'):
+                        show_sources(step['source_ids'])
+                st.divider()
+            st.info('If a requirement is unclear, do not assume you are ineligible. Check the official rules and ask a qualified adviser or trusted adult when appropriate.')
+            st.caption('No application outcome, job or income is guaranteed.')
 
 elif page == 'Interactive Scenarios':
     st.header('What would you do?')
