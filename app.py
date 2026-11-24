@@ -58,6 +58,13 @@ def explore(category='All'):
     st.session_state.page = 'Context Switch'
     st.session_state.category_choice = category
 
+def go_to_path(goal=None, country=None):
+    if goal is not None:
+        st.session_state.route_goal = goal
+    if country is not None:
+        st.session_state.route_country = country
+    st.session_state.page = 'Your Path'
+
 if page == 'Home':
     st.markdown("""
     <div class="hero">
@@ -71,9 +78,7 @@ if page == 'Home':
     st.button('Explore advice', on_click=explore, type='primary')
     st.markdown('<div class="kicker">01 / THE CONTEXT SWITCH</div><div class="feature">WHAT IF YOU LIVED ELSEWHERE?<strong>Just get a job.</strong><p>Sounds simple, right? Compare three different realities.</p></div>', unsafe_allow_html=True)
     st.button('Compare contexts', on_click=explore, args=('Career & Work',))
-    if st.button('Build your path'):
-        st.session_state.page = 'Your Path'
-        st.rerun()
+    st.button('Build your path', on_click=go_to_path)
     st.markdown('<div class="kicker">02 / FIND YOUR TOPIC</div>', unsafe_allow_html=True)
     for category in sorted(advice['category'].unique().tolist()):
         st.button(category, key='home_' + category, on_click=explore, args=(category,), use_container_width=True)
@@ -109,8 +114,43 @@ elif page == 'Context Switch':
         advice_ids[label] = row['advice_id']
     selected_label = st.selectbox('Choose advice', labels)
     selected = advice_ids[selected_label]
-    st.caption('The profiles below are predefined research cases, not personalized legal assessments.')
     case = contexts[contexts['advice_id'] == selected]
+    mode = st.radio('Mode', ['Compare countries', 'My context'], horizontal=True)
+    if mode == 'My context':
+        st.caption('For A003 and A004, country means country of origin, not destination.')
+        country = st.selectbox('Your country', countries, key='my_country')
+        age = st.number_input('Your age', min_value=13, max_value=100, value=17, step=1)
+        residency = st.selectbox('Your status', ['Citizen', 'International student', 'Other or unsure'])
+        match = case[case['country'] == country]
+        if match.empty:
+            st.info('No research case for this country yet.')
+        else:
+            row = match.iloc[0]
+            expected = 'Citizen' if row['residency_status'].startswith('Citizen') else 'International student' if row['residency_status'].startswith('International') else 'Other or unsure'
+            st.caption('Research profile: age ' + row['age_group'] + ' | ' + row['residency_status'] + ' | ' + row['region'])
+            confirmed = st.checkbox('The other conditions of this research profile also describe my situation')
+            if str(age) == row['age_group'] and residency == expected and residency != 'Other or unsure' and confirmed:
+                st.info('Matching research profile. Findings are preliminary, not a personal eligibility decision.')
+                for title, status, description in dimensions:
+                    with st.expander(title + ': ' + (row.get(status, 'Unknown') or 'Unknown')):
+                        st.write(row.get(description, '') or 'Insufficient information.')
+                st.write('Alternative: ' + row['alternative'])
+            else:
+                st.info('No confirmed matching profile. Your five dimensions remain Unknown. The research case is available below for reference only.')
+                with st.expander('Reference case (not your assessment)'):
+                    for title, status, description in dimensions:
+                        st.write(title + ': ' + (row.get(status, 'Unknown') or 'Unknown'))
+                        st.write(row.get(description, '') or 'Insufficient information.')
+            with st.expander('Evidence and verification'):
+                show_sources(row['source_ids'])
+                st.caption('Record date: ' + row['checked_date'])
+        route_goals = {'A001': 'Learn a skill and build experience', 'A007': 'Find a first job', 'A012': 'Find a first job', 'A003': 'Study with a lower budget', 'A015': 'Study with a lower budget', 'A016': 'Study with a lower budget', 'A017': 'Learn a skill and build experience'}
+        if selected in route_goals:
+            st.button('Explore a general starting route', on_click=go_to_path, args=(route_goals[selected], country))
+        else:
+            st.button('Explore available routes', on_click=go_to_path, args=(None, country))
+        st.stop()
+    st.caption('The profiles below are predefined research cases, not personalized legal assessments.')
     selected_countries = st.multiselect('Compare countries', countries, default=countries)
     status_icons = {'Available': '*', 'Conditional': '~', 'Restricted': 'X', 'Unknown': '?', 'N/A': '-'}
     if selected_countries:
@@ -164,7 +204,7 @@ elif page == 'Advice Explorer':
     st.caption(f'{len(filtered)} advice cases found')
     for _, row in filtered.iterrows():
         with st.expander(row['advice']):
-            st.caption(row['category'] + ' Â· ' + row['platform'])
+            st.caption(row['category'] + ' / ' + row['platform'])
             st.write(row['applicability_notes'])
             st.caption(row['verification_status'])
             if row['post_url'].startswith('https://'):
@@ -178,8 +218,15 @@ elif page == 'Your Path':
         st.warning('Add pathways.csv next to app.py to enable this section.')
     else:
         paths = pd.read_csv('pathways.csv', dtype=str, keep_default_na=False)
-        goal = st.selectbox('What do you want to do?', sorted(paths['goal'].unique()))
-        country = st.selectbox('Where do you live?', countries)
+        goals = sorted(paths['goal'].unique())
+        default_goal = st.session_state.pop('route_goal', None)
+        if default_goal in goals:
+            st.session_state.path_goal = default_goal
+        default_country = st.session_state.pop('route_country', None)
+        if default_country in countries:
+            st.session_state.path_country = default_country
+        goal = st.selectbox('What do you want to do?', goals, key='path_goal')
+        country = st.selectbox('Where do you live?', countries, key='path_country')
         path = paths[(paths['goal'] == goal) & (paths['country'] == country)]
         if path.empty:
             st.info('This route is not yet researched.')
