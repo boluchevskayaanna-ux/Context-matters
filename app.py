@@ -1,10 +1,9 @@
 import os
 import pandas as pd
-import altair as alt
 import streamlit as st
 
 st.set_page_config(page_title='Context Matters', layout='wide')
-# Keep the visual design in a separate CSS file
+# Keep the visual design in a separate CSS file.
 if os.path.exists('style.css'):
     with open('style.css', encoding='utf-8') as file:
         st.markdown('<style>' + file.read() + '</style>', unsafe_allow_html=True)
@@ -17,7 +16,7 @@ if 'category_choice' not in st.session_state:
     st.session_state.category_choice = 'All'
 page = st.radio('Navigation', pages, horizontal=True, key='page', label_visibility='collapsed')
 
-# Keep the Excel export beside app.py, or upload it here for local testing
+# Keep the Excel export beside app.py, or upload it here for local testing.
 if os.path.exists('database.xlsx'):
     database = 'database.xlsx'
 else:
@@ -37,7 +36,7 @@ except (ValueError, KeyError, OSError) as error:
     st.stop()
 
 countries = ['Russia', 'USA', 'France']
-# Each dimension has its own status. No aggregate accessibility score
+# Each dimension has its own status. No aggregate accessibility score.
 dimensions = [
     ('Legal', 'legal_status', 'legal_conditions'),
     ('Financial', 'financial_status', 'financial_conditions'),
@@ -300,16 +299,14 @@ elif page == 'Affordability Calculator':
     else:
         st.info('A positive balance does not guarantee affordability. Check actual costs, irregular bills and available support.')
     st.subheader('Where the money goes')
-    chart_data = pd.DataFrame({'Category': ['Income'] + categories,
-                               'Amount': [income] + list(costs.values()),
-                               'Type': ['Income'] + ['Expense'] * len(categories)})
-    chart = alt.Chart(chart_data).mark_bar().encode(
-        x=alt.X('Amount:Q', title=currency),
-        y=alt.Y('Category:N', sort=['Income'] + categories, title=None, axis=alt.Axis(labelAngle=0, labelLimit=200)),
-        color=alt.Color('Type:N', scale=alt.Scale(domain=['Income', 'Expense'], range=['#2536D9', '#F5A8CD']), legend=None),
-        tooltip=['Category:N', alt.Tooltip('Amount:Q', format=',.2f')]
-    ).properties(height=350)
-    st.altair_chart(chart, use_container_width=True)
+    amounts = {'Income': income, **costs}
+    maximum = max(1, *amounts.values())
+    for name, amount in amounts.items():
+        width = amount / maximum * 100
+        color = '#2536D9' if name == 'Income' else '#F5A8CD'
+        st.markdown(f'<div class="budget-row"><div class="budget-label">{name}<span>{amount:,.2f} {currency}</span></div><div class="budget-track"><div style="width:{width:.4f}%;background:{color};height:18px"></div></div></div>', unsafe_allow_html=True)
+    st.caption('Blue: income. Pink: monthly expenses and savings allocations. All bars use the same scale.')
+
 
 
 else:
