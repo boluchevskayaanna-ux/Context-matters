@@ -1,9 +1,10 @@
 import os
 import pandas as pd
+import altair as alt
 import streamlit as st
 
 st.set_page_config(page_title='Context Matters', layout='wide')
-# Keep the visual design in a separate CSS file.
+# Keep the visual design in a separate CSS file
 if os.path.exists('style.css'):
     with open('style.css', encoding='utf-8') as file:
         st.markdown('<style>' + file.read() + '</style>', unsafe_allow_html=True)
@@ -16,7 +17,7 @@ if 'category_choice' not in st.session_state:
     st.session_state.category_choice = 'All'
 page = st.radio('Navigation', pages, horizontal=True, key='page', label_visibility='collapsed')
 
-# Keep the Excel export beside app.py, or upload it here for local testing.
+# Keep the Excel export beside app.py, or upload it here for local testing
 if os.path.exists('database.xlsx'):
     database = 'database.xlsx'
 else:
@@ -36,7 +37,7 @@ except (ValueError, KeyError, OSError) as error:
     st.stop()
 
 countries = ['Russia', 'USA', 'France']
-# Each dimension has its own status. No aggregate accessibility score.
+# Each dimension has its own status. No aggregate accessibility score
 dimensions = [
     ('Legal', 'legal_status', 'legal_conditions'),
     ('Financial', 'financial_status', 'financial_conditions'),
@@ -90,6 +91,7 @@ if page == 'Home':
     st.caption('Independent research prototype. Evidence checks are ongoing; this is not personalized legal or financial advice.')
 
 elif page == 'Context Switch':
+    st.markdown('<div class="section-note">01 / CONTEXT LAB</div>', unsafe_allow_html=True)
     st.header('Same advice. Different context.')
     st.write('Explore how the same online advice changes across countries, rules and life circumstances.')
     a, b, c = st.columns(3)
@@ -197,6 +199,7 @@ elif page == 'Context Switch':
                 st.caption('Record date: ' + row['checked_date'])
 
 elif page == 'Advice Explorer':
+    st.markdown('<div class="section-note">02 / THE ADVICE ARCHIVE</div>', unsafe_allow_html=True)
     st.header('Advice Explorer')
     st.write('Explore the advice behind the research and its original context.')
     search = st.text_input('Search advice')
@@ -211,6 +214,7 @@ elif page == 'Advice Explorer':
                 st.link_button('Original publication', row['post_url'])
 
 elif page == 'Your Path':
+    st.markdown('<div class="section-note">03 / YOUR ROUTE</div>', unsafe_allow_html=True)
     st.header('Your goal. Your next steps.')
     st.write('Choose a goal and a country to see a practical starting route.')
     st.caption('These routes are research-based planning guides, not a personalized legal assessment.')
@@ -245,6 +249,7 @@ elif page == 'Your Path':
             st.caption('No application outcome, job or income is guaranteed.')
 
 elif page == 'Interactive Scenarios':
+    st.markdown('<div class="section-note">04 / DECISION LAB</div>', unsafe_allow_html=True)
     st.header('What would you do?')
     st.caption('Hypothetical educational situations, not personal advice.')
     scenario_labels = []
@@ -267,24 +272,48 @@ elif page == 'Interactive Scenarios':
             show_sources(row['source_ids'])
 
 elif page == 'Affordability Calculator':
-    st.header('Affordability Calculator')
-    st.caption('Illustrative adult monthly budget. No currency conversion or personal financial recommendation.')
+    st.header('The cost of independence.')
+    st.markdown('<div class="section-note">BUDGET LAB / MONTHLY PLANNING</div>', unsafe_allow_html=True)
+    st.caption('Illustrative adult budget. Use one currency throughout; no exchange-rate conversion.')
     currency = st.selectbox('Currency', ['EUR', 'USD', 'RUB'])
-    income = st.number_input('Net monthly income', min_value=0.0, value=1500.0)
-    rent = st.number_input('Monthly rent', min_value=0.0, value=750.0)
-    expenses = st.number_input('Other essential expenses', min_value=0.0, value=450.0)
-    balance = income - rent - expenses
+    income = st.number_input('Monthly net income and support', min_value=0.0, value=0.0)
+    st.subheader('Monthly expenses')
+    categories = ['Housing', 'Groceries', 'Education', 'Healthcare', 'Health insurance', 'Utilities', 'Transport', 'Phone and internet', 'Emergency savings', 'Other expenses']
+    costs = {}
+    left, right = st.columns(2)
+    for i, name in enumerate(categories):
+        with (left if i % 2 == 0 else right):
+            costs[name] = st.number_input(name, min_value=0.0, value=0.0, key='budget_' + name)
+    st.caption('Other expenses: clothing, entertainment, cosmetics and other costs not included above. Avoid counting the same bill twice.')
+    st.subheader('One-time expenses')
+    deposit = st.number_input('Housing deposit', min_value=0.0, value=0.0)
+    setup = st.number_input('Moving, equipment and other initial costs', min_value=0.0, value=0.0)
+    total = sum(costs.values())
+    balance = income - total
     a, b, c = st.columns(3)
-    a.metric('Income', f'{income:,.2f} {currency}')
-    b.metric('Essential costs', f'{rent + expenses:,.2f} {currency}')
+    a.metric('Monthly income', f'{income:,.2f} {currency}')
+    b.metric('Monthly allocations', f'{total:,.2f} {currency}')
     c.metric('Monthly balance', f'{balance:,.2f} {currency}')
+    st.metric('One-time costs', f'{deposit + setup:,.2f} {currency}')
     if balance < 0:
-        st.warning('Expenses exceed income in this hypothetical budget.')
+        st.warning('Your entered monthly allocations exceed your income.')
     else:
-        st.info('This balance does not account for unexpected expenses or upfront costs.')
-    st.bar_chart(pd.DataFrame({'Amount': [income, rent, expenses]}, index=['Income', 'Rent', 'Other essentials']))
+        st.info('A positive balance does not guarantee affordability. Check actual costs, irregular bills and available support.')
+    st.subheader('Where the money goes')
+    chart_data = pd.DataFrame({'Category': ['Income'] + categories,
+                               'Amount': [income] + list(costs.values()),
+                               'Type': ['Income'] + ['Expense'] * len(categories)})
+    chart = alt.Chart(chart_data).mark_bar().encode(
+        x=alt.X('Amount:Q', title=currency),
+        y=alt.Y('Category:N', sort=['Income'] + categories, title=None, axis=alt.Axis(labelAngle=0, labelLimit=200)),
+        color=alt.Color('Type:N', scale=alt.Scale(domain=['Income', 'Expense'], range=['#2536D9', '#F5A8CD']), legend=None),
+        tooltip=['Category:N', alt.Tooltip('Amount:Q', format=',.2f')]
+    ).properties(height=350)
+    st.altair_chart(chart, use_container_width=True)
+
 
 else:
+    st.markdown('<div class="section-note">06 / THE EVIDENCE</div>', unsafe_allow_html=True)
     st.header('Research & Evidence')
     st.warning('Purposive, nonrepresentative sample. Not all sources or numerical estimates have been independently verified.')
     for name in ['Findings', 'Methodology', 'Economic Data', 'Sources']:
