@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import streamlit as st
+from research_tools import research_tools
 
 st.set_page_config(page_title='Context Matters', layout='wide')
 # Keep the visual design in a separate CSS file.
@@ -92,6 +93,8 @@ if page == 'Home':
 elif page == 'Context Switch':
     st.markdown('<div class="section-note">01 / CONTEXT LAB</div>', unsafe_allow_html=True)
     st.header('Same advice. Different context.')
+    with st.expander('Rule-based research tools'):
+        research_tools()
     st.write('Explore how the same online advice changes across countries, rules and life circumstances.')
     a, b, c = st.columns(3)
     a.metric('Advice cases', len(advice))
