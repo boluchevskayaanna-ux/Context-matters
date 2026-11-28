@@ -258,37 +258,9 @@ elif page == 'Advice Explorer':
 elif page == 'Your Path':
     st.markdown('<div class="section-note">03 / YOUR ROUTE</div>', unsafe_allow_html=True)
     st.header('Your goal. Your next steps.')
-    st.write('Choose a goal and a country to see a practical starting route.')
-    st.caption('These routes are research-based planning guides, not a personalized legal assessment.')
-    if not os.path.exists('pathways.csv'):
-        st.warning('Add pathways.csv next to app.py to enable this section.')
-    else:
-        paths = pd.read_csv('pathways.csv', dtype=str, keep_default_na=False)
-        goals = sorted(paths['goal'].unique())
-        default_goal = st.session_state.pop('route_goal', None)
-        if default_goal in goals:
-            st.session_state.path_goal = default_goal
-        default_country = st.session_state.pop('route_country', None)
-        if default_country in countries:
-            st.session_state.path_country = default_country
-        goal = st.selectbox('What do you want to do?', goals, key='path_goal')
-        country = st.selectbox('Where do you live?', countries, key='path_country')
-        path = paths[(paths['goal'] == goal) & (paths['country'] == country)]
-        if path.empty:
-            st.info('This route is not yet researched.')
-        else:
-            st.markdown('<div class="kicker">YOUR STARTING ROUTE</div>', unsafe_allow_html=True)
-            for _, step in path.sort_values('step').iterrows():
-                st.subheader(step['step'] + ' / ' + step['title'])
-                st.write(step['action'])
-                if step['check']:
-                    st.caption('Check: ' + step['check'])
-                if step['source_ids']:
-                    with st.expander('Sources for this step'):
-                        show_sources(step['source_ids'])
-                st.divider()
-            st.info('If a requirement is unclear, do not assume you are ineligible. Check the official rules and ask a qualified adviser or trusted adult when appropriate.')
-            st.caption('No application outcome, job or income is guaranteed.')
+    from path_lab import show_path
+    paths = pd.read_csv('pathways.csv', dtype=str, keep_default_na=False)
+    show_path(st, paths, countries, show_sources)
 
 elif page == 'Interactive Scenarios':
     from decision_lab import show_decision_lab
