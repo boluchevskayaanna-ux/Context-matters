@@ -291,27 +291,8 @@ elif page == 'Your Path':
             st.caption('No application outcome, job or income is guaranteed.')
 
 elif page == 'Interactive Scenarios':
-    st.markdown('<div class="section-note">04 / DECISION LAB</div>', unsafe_allow_html=True)
-    st.header('What would you do?')
-    st.caption('Hypothetical educational situations, not personal advice.')
-    scenario_labels = []
-    scenario_ids = {}
-    for _, scenario in scenarios.iterrows():
-        label = scenario['scenario_id'] + ' - ' + scenario['situation']
-        scenario_labels.append(label)
-        scenario_ids[label] = scenario['scenario_id']
-    if scenario_labels:
-        selected_label = st.selectbox('Select a scenario', scenario_labels)
-        selected = scenario_ids[selected_label]
-        row = scenarios[scenarios['scenario_id'] == selected].iloc[0]
-        st.caption(row['country'])
-        answer = st.radio('Your decision', [row['option_a'], row['option_b']], index=None, key=selected)
-        if answer is not None:
-            if answer == row['option_a']:
-                st.info(row['feedback_a'])
-            else:
-                st.info(row['feedback_b'])
-            show_sources(row['source_ids'])
+    from decision_lab import show_decision_lab
+    show_decision_lab(st, scenarios, show_sources)
 
 elif page == 'Affordability Calculator':
     st.header('The cost of independence.')
