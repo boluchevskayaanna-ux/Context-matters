@@ -55,6 +55,44 @@ def show_sources(ids):
             if source['url'].startswith(('https://', 'http://')):
                 st.link_button('Open source', source['url'])
 
+# Related profiles are evidence leads, never personal eligibility decisions.
+def display_status(value):
+    return 'Needs verification' if not value or value == 'Unknown' else value
+
+
+def related_profiles(country, selected, age=None):
+    category = advice.loc[advice['advice_id'] == selected, 'category'].iloc[0]
+    ids = advice.loc[advice['category'] == category, 'advice_id']
+    rows = contexts[(contexts['country'] == country) & contexts['advice_id'].isin(ids) & (contexts['advice_id'] != selected)].copy()
+    if age is not None:
+        rows['distance'] = (pd.to_numeric(rows['age_group'], errors='coerce') - age).abs()
+        rows = rows.sort_values('distance')
+    return rows.head(3)
+
+
+def show_related(country, selected, age=None):
+    rows = related_profiles(country, selected, age)
+    st.caption('Related research leads: same topic and country, not evidence that the selected advice applies.')
+    if rows.empty:
+        st.write('No related profile in the current dataset. Consult an official authority for this topic before acting.')
+    for _, row in rows.iterrows():
+        label = advice.loc[advice['advice_id'] == row['advice_id'], 'advice'].iloc[0]
+        st.markdown('**' + label + '**')
+        st.caption('Reference age: ' + row['age_group'] + ' | ' + row['residency_status'])
+        st.write(row['legal_conditions'])
+        show_sources(row['source_ids'])
+
+
+def show_dimensions(row, personal=False):
+    for title, status, description in dimensions:
+        value = display_status(row.get(status, ''))
+        prefix = 'Reference: ' if personal else ''
+        with st.expander(title + ': ' + prefix + value, expanded=personal):
+            st.write(row.get(description, '') or 'No dimension-specific finding recorded.')
+            if value == 'Needs verification':
+                st.caption('The dataset does not establish this dimension. Review the linked evidence and check your specific circumstances.')
+
+
 def explore(category='All'):
     st.session_state.page = 'Context Switch'
     st.session_state.category_choice = category
@@ -100,7 +138,7 @@ elif page == 'Context Switch':
     a.metric('Advice cases', len(advice))
     b.metric('Countries', len(countries))
     c.metric('Context profiles', len(contexts))
-    st.caption('Research prototype. Assessments are preliminary; Unknown means insufficient evidence. Check current official rules before acting.')
+    st.caption('Research prototype. Assessments are preliminary; Needs verification means insufficient evidence. Check current official rules before acting.')
     categories = ['All'] + sorted(advice['category'].unique().tolist())
     if st.session_state.category_choice not in categories:
         st.session_state.category_choice = 'All'
@@ -127,27 +165,22 @@ elif page == 'Context Switch':
         residency = st.selectbox('Your status', ['Citizen', 'International student', 'Other or unsure'])
         match = case[case['country'] == country]
         if match.empty:
-            st.info('No research case for this country yet.')
+            st.info('No direct research profile yet. Explore related evidence below.')
+            show_related(country, selected, age)
         else:
             row = match.iloc[0]
             expected = 'Citizen' if row['residency_status'].startswith('Citizen') else 'International student' if row['residency_status'].startswith('International') else 'Other or unsure'
             st.caption('Research profile: age ' + row['age_group'] + ' | ' + row['residency_status'] + ' | ' + row['region'])
-            confirmed = st.checkbox('The other conditions of this research profile also describe my situation')
-            if str(age) == row['age_group'] and residency == expected and residency != 'Other or unsure' and confirmed:
-                st.info('Matching research profile. Findings are preliminary, not a personal eligibility decision.')
-                for title, status, description in dimensions:
-                    with st.expander(title + ': ' + (row.get(status, 'Unknown') or 'Unknown')):
-                        st.write(row.get(description, '') or 'Insufficient information.')
-                st.write('Alternative: ' + row['alternative'])
-            else:
-                st.info('No confirmed matching profile. Your five dimensions remain Unknown. The research case is available below for reference only.')
-                with st.expander('Reference case (not your assessment)'):
-                    for title, status, description in dimensions:
-                        st.write(title + ': ' + (row.get(status, 'Unknown') or 'Unknown'))
-                        st.write(row.get(description, '') or 'Insufficient information.')
-            with st.expander('Evidence and verification'):
+            st.write('Age: ' + ('matches reference age' if str(age) == row['age_group'] else 'differs from reference age; age-dependent rules may differ.'))
+            st.write('Residency: ' + ('matches broad reference category' if residency == expected and residency != 'Other or unsure' else 'differs or is unconfirmed; eligibility may differ.'))
+            st.info('Findings below describe the research profile. Other conditions, local rules and personal eligibility still require verification.')
+            show_dimensions(row, personal=True)
+            st.write('Reference alternative: ' + row['alternative'])
+            with st.expander('Evidence and verification', expanded=True):
                 show_sources(row['source_ids'])
                 st.caption('Record date: ' + row['checked_date'])
+            with st.expander('Related research leads'):
+                show_related(country, selected, age)
         route_goals = {'A001': 'Learn a skill and build experience', 'A007': 'Find a first job', 'A012': 'Find a first job', 'A003': 'Study with a lower budget', 'A015': 'Study with a lower budget', 'A016': 'Study with a lower budget', 'A017': 'Learn a skill and build experience'}
         if selected in route_goals:
             st.button('Explore a general starting route', on_click=go_to_path, args=(route_goals[selected], country))
@@ -163,10 +196,10 @@ elif page == 'Context Switch':
             item = {'Dimension': title}
             for country in selected_countries:
                 match = case[case['country'] == country]
-                value = 'Unknown'
+                value = 'No direct profile'
                 if not match.empty:
-                    value = match.iloc[0].get(status, 'Unknown') or 'Unknown'
-                item[country] = status_icons.get(value, '') + ' ' + value
+                    value = display_status(match.iloc[0].get(status, ''))
+                item[country] = value
             summary.append(item)
         st.subheader('At a glance')
         st.dataframe(pd.DataFrame(summary), hide_index=True, use_container_width=True)
@@ -175,6 +208,10 @@ elif page == 'Context Switch':
     for country in selected_countries:
         match = case[case['country'] == country]
         if match.empty:
+            with st.container(border=True):
+                st.subheader(country)
+                st.write('No direct profile for this advice.')
+                show_related(country, selected)
             continue
         row = match.iloc[0]
         with st.container(border=True):
@@ -184,13 +221,11 @@ elif page == 'Context Switch':
                 st.caption('Evidence linked; individual claims may still be pending verification.')
             else:
                 st.caption('No official evidence linked yet.')
-            for title, status, description in dimensions:
-                with st.expander(f"{title}: {row.get(status, 'Unknown') or 'Unknown'}"):
-                    st.write(row.get(description, '') or 'Insufficient information.')
+            show_dimensions(row)
             st.markdown('**Alternative or next step**')
             st.write(row['alternative'])
             st.markdown('**Your next steps**')
-            st.write('1. Read the legal and administrative conditions above. If they are Unknown, verify them before making a decision.')
+            st.write('1. Read the legal and administrative conditions above. If they need verification, verify them before making a decision.')
             st.write('2. List what you already have: time, skills, equipment, documents and a realistic budget.')
             st.write('3. Choose one small, safe step toward the goal, such as learning a skill, preparing an application or contacting an official adviser.')
             if row['alternative']:
