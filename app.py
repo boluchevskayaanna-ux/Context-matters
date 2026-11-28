@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import streamlit as st
 from research_tools import research_tools
+from source_finder import show_guidance
 
 st.set_page_config(page_title='Context Matters', layout='wide')
 # Keep the visual design in a separate CSS file.
@@ -163,6 +164,7 @@ elif page == 'Context Switch':
         country = st.selectbox('Your country', countries, key='my_country')
         age = st.number_input('Your age', min_value=13, max_value=100, value=17, step=1)
         residency = st.selectbox('Your status', ['Citizen', 'International student', 'Other or unsure'])
+        region = st.text_input('Region or state (optional)', key='my_region')
         match = case[case['country'] == country]
         if match.empty:
             st.info('No direct research profile yet. Explore related evidence below.')
@@ -181,6 +183,7 @@ elif page == 'Context Switch':
                 st.caption('Record date: ' + row['checked_date'])
             with st.expander('Related research leads'):
                 show_related(country, selected, age)
+        show_guidance(st, country, selected, sources, age, region, residency)
         route_goals = {'A001': 'Learn a skill and build experience', 'A007': 'Find a first job', 'A012': 'Find a first job', 'A003': 'Study with a lower budget', 'A015': 'Study with a lower budget', 'A016': 'Study with a lower budget', 'A017': 'Learn a skill and build experience'}
         if selected in route_goals:
             st.button('Explore a general starting route', on_click=go_to_path, args=(route_goals[selected], country))
@@ -212,6 +215,7 @@ elif page == 'Context Switch':
                 st.subheader(country)
                 st.write('No direct profile for this advice.')
                 show_related(country, selected)
+                show_guidance(st, country, selected, sources)
             continue
         row = match.iloc[0]
         with st.container(border=True):
@@ -224,7 +228,8 @@ elif page == 'Context Switch':
             show_dimensions(row)
             st.markdown('**Alternative or next step**')
             st.write(row['alternative'])
-            st.markdown('**Your next steps**')
+            show_guidance(st, country, selected, sources)
+            st.markdown('**General planning prompts**')
             st.write('1. Read the legal and administrative conditions above. If they need verification, verify them before making a decision.')
             st.write('2. List what you already have: time, skills, equipment, documents and a realistic budget.')
             st.write('3. Choose one small, safe step toward the goal, such as learning a skill, preparing an application or contacting an official adviser.')
