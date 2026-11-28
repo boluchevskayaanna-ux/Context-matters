@@ -1,0 +1,6 @@
+country,kind,threshold_hours,rate,currency,rule,source,evidence
+France,student,308,4.5,EUR,Qualifying educational placement; same host and academic year; agreement required,S021,Official guidance checked
+USA,commercial,,,,Seven-factor primary beneficiary test; no single factor decisive,S020,Official guidance checked
+Russia,employment,,,,Employment contract requires wages,S169,Provisional
+Russia,educational,,,,Educational practice may be unpaid; classification matters,S169,Provisional
+Russia,apprenticeship,,,,Apprenticeship stipend at least federal MROT; practical work paid separately,S172; S173,Prior article review

@@ -1,0 +1,52 @@
+state,school_weekly_14_15,school_weekly_16_17,holiday_weekly_16_17,source_ids
+Alabama,,,,S007
+Alaska,,,,S007
+Arizona,18,,,S074
+Arkansas,,,,S007
+California,,,,S007
+Colorado,,,,S007
+Connecticut,,,,S007
+Delaware,,,,S007
+District of Columbia,,,48,S007
+Florida,15,30,,S077
+Georgia,,,,S007
+Hawaii,18,,,S095
+Idaho,,,,S007
+Illinois,18,,,S063
+Indiana,,,,S007
+Iowa,28,,,S093
+Kansas,,,,S007
+Kentucky,,,,S007
+Louisiana,,,,S007
+Maine,,24,50,S007
+Maryland,18,,,S104
+Massachusetts,,,48,S007
+Michigan,18,24,48,S060
+Minnesota,,,,S115; S116
+Mississippi,,,,S117; S118; S119
+Missouri,,,,S120; S121; S122; S123
+Montana,18,,,S112
+Nebraska,,,,S106
+Nevada,,,,S124; S125; S126
+New Hampshire,23,35,48,S109; S110; S111
+New Jersey,,,,S007
+New Mexico,,,,S007
+New York,,28,48,S007
+North Carolina,,,,S007
+North Dakota,18,,,S132; S133
+Ohio,18,,,S134; S135
+Oklahoma,18,,,S137
+Oregon,18,44,44,S138
+Pennsylvania,18,,,S139; S140; S141
+Rhode Island,,,,S142; S143
+South Carolina,18,,,S152
+South Dakota,20,,,S144; S152
+Tennessee,18,,,S145; S146; S147
+Texas,,,,S148; S149; S150
+Utah,18,,,S151; S152
+Vermont,18,,,S153; S154; S160
+Virginia,18,,,S156
+Washington,16,20,48,S157; S158
+West Virginia,,,,S007
+Wisconsin,,,,S007
+Wyoming,,,,S159; S161

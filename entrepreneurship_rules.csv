@@ -1,0 +1,5 @@
+country,kind,min_age,rule,source,evidence
+Russia,NPD,14,Written representative consent or full legal capacity; activity restrictions apply,S001; S031,Official guidance checked
+Russia,IP,14,Notarized consent or evidence of full capacity; registration conditions,S003,Provisional
+France,EURL/SASU,16,Non-emancipated minors aged 16–17: EURL or SASU with representative authorization; activity restrictions,S046,Prior official guidance review
+USA,business,,Registration depends on state and entity; minor eligibility not established,S171,Missing

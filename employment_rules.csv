@@ -1,0 +1,8 @@
+country,min_age,max_age,school_weekly,school_daily,holiday_weekly,holiday_daily,consent,permit,source,evidence
+Russia,14,14,12,2.5,24,4,True,False,S008; S009; S169,Provisional
+Russia,15,15,12,2.5,24,5,,False,S008; S009; S169,Provisional
+Russia,16,17,17.5,4,35,7,False,False,S008; S009; S169,Provisional
+France,14,15,0,0,35,7,True,True,S005; S166,Provisional
+France,16,17,35,8,35,8,True,False,S005; S166,Provisional
+USA,14,15,18,3,40,8,,,S164,Provisional
+USA,16,17,,,,,,,S164,Provisional

@@ -1,0 +1,16 @@
+source_id,country,institution,title,url,checked_date,verification_status
+S005,France,Service Public,Minimum age for employment,https://www.service-public.fr/particuliers/vosdroits/F1649,2026-11-17,Directly checked 2026-11-18
+S008,Russia,Russian Federation — Labour Code (ConsultantPlus),Article 63 — Minimum employment age,https://www.consultant.ru/document/cons_doc_LAW_34683/9627c87f117f9ccaaf55a73c9a614626c1e87ce0/,2026-11-17,Pending direct recheck
+S009,Russia,Russian Federation — Labour Code (ConsultantPlus),Article 92 — Reduced working hours,https://www.consultant.ru/document/cons_doc_LAW_34683/f6b05aa9799a360bb375c2a1f4c61977b86834cf/,2026-11-17,Pending direct recheck
+S164,USA,US DOL,State child labor standards,https://www.dol.gov/agencies/whd/state/child-labor,2026-11-27,"July 2025 snapshot; Idaho and Iowa hours; historical, not 2026 statutory verification"
+S166,France,Légifrance,Code du travail – D4153-1 to D4153-7,https://www.legifrance.gouv.fr/,2026-11-27,Primary law locator; article permalink pending
+S169,Russia,Russian Federation / ConsultantPlus,"Labour Code – articles 94, 133.1, 198, 204, 265–271",https://www.consultant.ru/document/cons_doc_LAW_34683/,2026-11-27,Code locator; current article texts pending direct verification
+S001,Russia,FNS,NPD and minors,https://www.nalog.gov.ru/rn25/ifns/r25_01/info/16603378/,2026-11-28,Read official guidance
+S031,Russia,FNS via ConsultantPlus,Minor NPD eligibility,https://www.consultant.ru/document/cons_doc_LAW_326876/,2026-11-28,Read guidance
+S003,Russia,FNS,IP registration,https://www.nalog.gov.ru/rn77/related_activities/registration_ip_yl/registration_ip/order/,2026-11-17,Pending recheck
+S020,USA,DOL,Internship rules,https://www.dol.gov/agencies/whd/fact-sheets/71-flsa-internships,2026-11-28,Prior database review; not independently rechecked in this update
+S021,France,URSSAF,Student internships,https://www.urssaf.fr/accueil/employeur/embaucher-gerer-salaries/embaucher/stagiaire-etudiant.html,2026-11-28,Prior database review; not independently rechecked in this update
+S046,France,Service Public,Company creation,https://entreprendre.service-public.gouv.fr/vosdroits/F31627,2026-11-28,Prior database review; not independently rechecked in this update
+S171,USA,SBA,Business registration,https://www.sba.gov/counseling/launch-your-business/,2026-11-28,Prior database review; not independently rechecked in this update
+S172,Russia,Labour Code,Article 198,https://www.consultant.ru/document/cons_doc_LAW_34683/b323a351fcd8fb48d7097109945d916f07b26e14/,2026-11-28,Prior database review; not independently rechecked in this update
+S173,Russia,Labour Code,Article 204,https://www.consultant.ru/document/cons_doc_LAW_34683/5f55c0b20248cd0d461daa38291ac1dc1c997d80/,2026-11-28,Prior database review; not independently rechecked in this update
